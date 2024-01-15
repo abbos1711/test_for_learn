@@ -1,0 +1,60 @@
+ubuntu serverdagi postgesql ma'lumotlar omborini boshqa serverga kopiya olib koçhirish
+
+eslatma avval biror postgesql ma'lumotlar omborida test qilib ko'ring!
+
+serverga kirib ushbu buyruqni bering:
+
+		pg_dump -U your_user_db -d your_db_name -f /home/myfile.sql -W
+
+
+
+agar yuqoridagi buyruqdan keyin error bersa postgres sozlamasini o'zgaritiring: 
+
+		sudo nano /etc/postgresql/<version>/main/pg_hba.conf 
+
+		Faylda "peer" ustunini izlang va uning o'ngida "md5" ni yozing:
+
+		local   all             metall_user                             md5
+
+
+Faylni saqlab chiqing va PostgreSQL-serverni qayta ishga tushiring:
+
+		sudo systemctl restart postgresql
+
+buyruqni qayta bering:
+
+		pg_dump -U your_user_db -d your_db_name -f /home/myfile.sql -W
+
+ko'rsatilgan manzilga faylni yaratib beradi kerakli serverga(boshqa server nazarda tutildi) falyni yuklang
+
+yangi serverga postgresni install qilib bo'lgach, ushbu buyuq yordamida postgresga ulaning:
+
+		sudo -i -u postgres
+		
+		postgres@1593939-ci47308:~$ psql   :ni yozing
+
+		create database your_db_name;
+		create user your_user_name with password 'your_password_user';
+
+	postgresdan chiqing:		
+		\q
+		exit
+
+fayldagi ma'lumotlarni yangi postgresqlga ko'chirishni boshlang:
+ushbu buyruqni bering:
+
+		psql -U your_user_db -d your_db_name
+
+	yaratilgan postgresga ulanadi....
+
+		\i myfile.sql (pathni to'g'ri ko'rsating)
+
+	o'zgarishlarni tugashini kuting...
+
+loyihangizga kiring:
+
+		python manage.py makemigrations
+		python manage.py migrate
+		python manage.py runserver 0.0.0.0:8000 (loyihani qo'lda ishga tushiring va shaxsiy IP addressingizning :8000 - portiga kiring
+eski supseruser parol loginlaringizni kiriting)
+		
